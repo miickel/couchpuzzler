@@ -1,0 +1,6 @@
+package com.example.puzzlehack
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity() {
+}
