@@ -9,16 +9,16 @@ class LobbyView extends StatelessWidget {
     return Scaffold(
       body: Row(
         children: const [
-          Title(),
-          JoinInstructions(),
+          _Title(),
+          _JoinInstructions(),
         ],
       ),
     );
   }
 }
 
-class Title extends StatelessWidget {
-  const Title({Key? key}) : super(key: key);
+class _Title extends StatelessWidget {
+  const _Title({Key? key}) : super(key: key);
 
   final Gradient _titleGradient = const LinearGradient(
     colors: [
@@ -79,8 +79,8 @@ class Title extends StatelessWidget {
   }
 }
 
-class JoinInstructions extends StatelessWidget {
-  const JoinInstructions({Key? key}) : super(key: key);
+class _JoinInstructions extends StatelessWidget {
+  const _JoinInstructions({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
