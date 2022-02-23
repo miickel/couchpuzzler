@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'lobby.dart';
-import 'lobby_view.dart';
+import 'package:puzzlehack/lobby/lobby.dart';
 
 class LobbyPage extends StatelessWidget {
   const LobbyPage({Key? key}) : super(key: key);
@@ -10,7 +8,7 @@ class LobbyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => LobbyCubit(),
+      create: (_) => LobbyBloc(),
       child: const LobbyView(),
     );
   }

@@ -1,2 +1,3 @@
-export 'lobby_cubit.dart';
-export 'lobby_page.dart';
+export 'bloc/lobby_bloc.dart';
+export 'view/lobby_page.dart';
+export 'view/lobby_view.dart';
