@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:puzzlehack/gamepad/gamepad.dart';
 import 'lobby/lobby.dart';
 
 class PuzzleApp extends StatelessWidget {
@@ -13,12 +14,8 @@ class PuzzleApp extends StatelessWidget {
       ),
       GoRoute(
         path: '/join/:channel',
-        builder: (context, state) => Scaffold(
-          body: Center(
-            child: Text(
-              "join channel: ${state.params['channel']!}",
-            ),
-          ),
+        builder: (context, state) => GamepadPage(
+          channelId: state.params['channel']!,
         ),
       ),
     ],
@@ -29,6 +26,10 @@ class PuzzleApp extends StatelessWidget {
     return MaterialApp.router(
       routeInformationParser: _router.routeInformationParser,
       routerDelegate: _router.routerDelegate,
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+      ),
     );
   }
 }
