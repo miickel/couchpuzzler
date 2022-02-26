@@ -108,6 +108,7 @@
     const Interop = {
       onPlayerChange: () => {},
       onMove: () => {},
+      onGameStateChange: () => {},
 
       ready: function(channelId) {
         if (this.channelId && this.channelId !== channelId) {
@@ -127,8 +128,17 @@
         })
       },
 
-      join: function(player) {
+      join: function(channelId, player) {
+        this.channel = puzzle.get(channelId)
         this.channel.get('players').get(player.id).put(player)
+
+        this.channel.get('state').on((state) => {
+          if (this.onGameStateChange) this.onGameStateChange(state)
+        })
+      },
+
+      setGameState: function(state) {
+        this.channel.get('state').put(state);
       },
 
       move: function(playerId, direction) {

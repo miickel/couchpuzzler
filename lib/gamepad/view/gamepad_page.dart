@@ -10,7 +10,7 @@ class GamepadPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => GamepadBloc(),
+      create: (_) => GamepadBloc()..add(GamepadInitialized(channelId)),
       child: GamepadView(channelId: channelId),
     );
   }

@@ -7,6 +7,8 @@ import 'package:puzzlehack/models/js_player.dart';
 import 'package:puzzlehack/utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../../models/models.dart';
+
 class LobbyView extends StatefulWidget {
   const LobbyView({Key? key}) : super(key: key);
 
@@ -15,7 +17,7 @@ class LobbyView extends StatefulWidget {
 }
 
 class _LobbyViewState extends State<LobbyView> {
-  final _channelId = Utils.getRandomString(6);
+  final _channelId = "taco";
 
   @override
   void initState() {
@@ -27,6 +29,7 @@ class _LobbyViewState extends State<LobbyView> {
 
   _onPlayerChange(JsPlayer player) {
     debugPrint("Player changed ${player.id}");
+    context.read<LobbyBloc>().add(PlayerAdded(Player.fromJsPlayer(player)));
   }
 
   @override

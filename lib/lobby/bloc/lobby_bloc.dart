@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:puzzlehack/interop.dart';
 import 'package:puzzlehack/models/models.dart';
 
 part 'lobby_event.dart';
@@ -27,13 +28,16 @@ class LobbyBloc extends Bloc<LobbyEvent, LobbyState> {
   }
 
   _onGameStarted(GameStarted event, Emitter<LobbyState> emit) {
+    Interop.setGameState("playing");
     emit(LobbyPlaying(HashSet<Player>.from(state.players)));
   }
 
   _emitReadyWaiting(Emitter<LobbyState> emit, HashSet<Player> players) {
-    if (players.length > 1) {
+    if (players.isNotEmpty) {
+      Interop.setGameState("ready");
       emit(LobbyReady(players));
     } else {
+      Interop.setGameState("waiting");
       emit(LobbyWaiting(players));
     }
   }

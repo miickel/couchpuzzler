@@ -1,6 +1,10 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:js/js.dart';
+import 'package:puzzlehack/gamepad/gamepad.dart';
+import 'package:puzzlehack/interop.dart';
 
 enum Direction { none, up, right, down, left }
 
@@ -32,46 +36,74 @@ class _GamepadViewState extends State<GamepadView>
   double _dy = 0.0;
 
   @override
+  void initState() {
+    var bloc = BlocProvider.of<GamepadBloc>(context);
+    Interop.onGameStateChange = allowInterop((state) {
+      log("changed:::: $state");
+      bloc.add(GameStateChanged(state));
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(children: [
-        Expanded(
-          child: GestureDetector(
-            onPanStart: _onPanStart,
-            onPanUpdate: _onPanUpdate,
-            onPanEnd: (details) => _onPanEnd(context, details),
-            child: Container(
-              color: Colors.purple.shade900,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: ScaleTransition(
-                          scale: _scale,
-                          child: FadeTransition(
-                            opacity: _opacity,
-                            child: RotatedBox(
-                              quarterTurns: direction.index,
-                              child: const Icon(
-                                Icons.chevron_left_rounded,
-                                size: 400,
-                                color: Colors.tealAccent,
+    return BlocBuilder<GamepadBloc, GamepadState>(
+      builder: (context, state) {
+        if (state.status == GamepadStatus.initial) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (state.status == GamepadStatus.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: Text("Waiting for host to start the game."),
+            ),
+          );
+        }
+
+        return Scaffold(
+          body: Column(children: [
+            Expanded(
+              child: GestureDetector(
+                onPanStart: _onPanStart,
+                onPanUpdate: _onPanUpdate,
+                onPanEnd: (details) => _onPanEnd(context, details),
+                child: Container(
+                  color: Colors.purple.shade900,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: FittedBox(
+                            fit: BoxFit.cover,
+                            child: ScaleTransition(
+                              scale: _scale,
+                              child: FadeTransition(
+                                opacity: _opacity,
+                                child: RotatedBox(
+                                  quarterTurns: direction.index,
+                                  child: const Icon(
+                                    Icons.chevron_left_rounded,
+                                    size: 400,
+                                    color: Colors.tealAccent,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    )
-                  ],
+                        )
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      ]),
+          ]),
+        );
+      },
     );
   }
 
