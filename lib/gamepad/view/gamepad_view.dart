@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,7 +39,6 @@ class _GamepadViewState extends State<GamepadView>
   void initState() {
     var bloc = BlocProvider.of<GamepadBloc>(context);
     Interop.onGameStateChange = allowInterop((state) {
-      log("changed:::: $state");
       bloc.add(GameStateChanged(state));
     });
     super.initState();
@@ -73,11 +72,26 @@ class _GamepadViewState extends State<GamepadView>
                 child: Container(
                   color: Colors.purple.shade900,
                   child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: FittedBox(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          FractionallySizedBox(
+                            widthFactor: .18,
+                            child: Center(
+                              child: AspectRatio(
+                                aspectRatio: 1,
+                                child: Transform.rotate(
+                                  angle: pi / 4,
+                                  child: Container(
+                                    color: Colors.purple.shade800,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          FittedBox(
                             fit: BoxFit.cover,
                             child: ScaleTransition(
                               scale: _scale,
@@ -86,16 +100,16 @@ class _GamepadViewState extends State<GamepadView>
                                 child: RotatedBox(
                                   quarterTurns: direction.index,
                                   child: const Icon(
-                                    Icons.chevron_left_rounded,
+                                    Icons.chevron_left_sharp,
                                     size: 400,
                                     color: Colors.tealAccent,
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -133,8 +147,6 @@ class _GamepadViewState extends State<GamepadView>
   _onPanEnd(context, details) {
     _dx = _dy = 0;
     if (direction != Direction.none) {
-      log("send $direction");
-
       _controller.forward(from: 0);
     }
   }
