@@ -4,7 +4,6 @@ import 'package:js/js.dart';
 @anonymous
 class JsPlayer {
   external String get id;
-  external bool get hosting;
 
-  external const factory JsPlayer({String id, bool hosting});
+  external const factory JsPlayer({String id});
 }

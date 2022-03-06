@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:js/js.dart';
 import 'package:puzzlehack/interop.dart';
-import 'package:puzzlehack/lobby/bloc/lobby_bloc.dart';
-import 'package:puzzlehack/models/js_player.dart';
-import 'package:puzzlehack/utils.dart';
+import 'package:puzzlehack/models/models.dart';
+import 'package:puzzlehack/puzzle/puzzle.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class LobbyView extends StatefulWidget {
@@ -15,7 +14,7 @@ class LobbyView extends StatefulWidget {
 }
 
 class _LobbyViewState extends State<LobbyView> {
-  final _channelId = Utils.getRandomString(6);
+  final _channelId = "tacotron";
 
   @override
   void initState() {
@@ -27,6 +26,7 @@ class _LobbyViewState extends State<LobbyView> {
 
   _onPlayerChange(JsPlayer player) {
     debugPrint("Player changed ${player.id}");
+    context.read<PuzzleBloc>().add(PlayerAdded(Player.fromJsPlayer(player)));
   }
 
   @override
@@ -112,7 +112,7 @@ class _JoinInstructions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LobbyBloc, LobbyState>(
+    return BlocBuilder<PuzzleBloc, PuzzleState>(
       builder: (context, state) {
         return Expanded(
           child: Padding(
@@ -138,8 +138,11 @@ class _JoinInstructions extends StatelessWidget {
                   foregroundColor: Colors.purple.shade900,
                 ),
                 const SizedBox(height: 32),
-                if (state is LobbyWaiting) ...[_WaitingButton()],
-                if (state is LobbyReady) ...[_ReadyButton()],
+                if (state.numberOfPlayers == 0) ...[
+                  _WaitingButton()
+                ] else ...[
+                  _ReadyButton()
+                ],
               ],
             ),
           ),
@@ -177,17 +180,18 @@ class _ReadyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final numPlayers =
-        context.select((LobbyBloc bloc) => bloc.state.players.length);
+        context.select((PuzzleBloc bloc) => bloc.state.numberOfPlayers);
     return ElevatedButton(
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.play_arrow, size: 16),
           const SizedBox(width: 4),
-          Text("Start the game with $numPlayers players"),
+          Text(
+              "Start the game with $numPlayers player${numPlayers > 1 ? "s" : ""}"),
         ],
       ),
-      onPressed: () => context.read<LobbyBloc>().add(GameStarted()),
+      onPressed: () => context.read<PuzzleBloc>().add(GameStarted()),
     );
   }
 }
