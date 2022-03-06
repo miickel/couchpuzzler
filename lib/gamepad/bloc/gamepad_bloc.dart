@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:puzzlehack/interop.dart';
-import 'package:puzzlehack/utils.dart';
 
 import 'package:puzzlehack/models/models.dart';
 
@@ -15,11 +14,11 @@ class GamepadBloc extends Bloc<GamepadEvent, GamepadState> {
   }
 
   _onGamepadInitialized(GamepadInitialized event, Emitter<GamepadState> emit) {
-    var player = JsPlayer(id: Utils.getRandomString(6));
+    var player = JsPlayer(id: "mickel");
     Interop.join(event.channelId, player);
 
     emit(state.copyWith(
-      status: GamepadStatus.waiting,
+      status: GamepadStatus.playing,
       player: Player.fromJsPlayer(player),
     ));
   }

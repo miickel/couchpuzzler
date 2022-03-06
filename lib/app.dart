@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:puzzlehack/game/game.dart';
 import 'package:puzzlehack/gamepad/gamepad.dart';
-import 'lobby/lobby.dart';
 
 class PuzzleApp extends StatelessWidget {
   PuzzleApp({Key? key}) : super(key: key);
@@ -10,7 +10,7 @@ class PuzzleApp extends StatelessWidget {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => const LobbyPage(),
+        builder: (context, state) => const GamePage(),
       ),
       GoRoute(
         path: '/join/:channel',

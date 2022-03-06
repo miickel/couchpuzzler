@@ -1,13 +1,13 @@
-part of 'lobby_bloc.dart';
+part of 'puzzle_bloc.dart';
 
-abstract class LobbyEvent extends Equatable {
-  const LobbyEvent();
+abstract class PuzzleEvent extends Equatable {
+  const PuzzleEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class PlayerAdded extends LobbyEvent {
+class PlayerAdded extends PuzzleEvent {
   const PlayerAdded(this.player);
   final Player player;
 
@@ -15,7 +15,7 @@ class PlayerAdded extends LobbyEvent {
   List<Object> get props => [player];
 }
 
-class PlayerRemoved extends LobbyEvent {
+class PlayerRemoved extends PuzzleEvent {
   const PlayerRemoved(this.player);
   final Player player;
 
@@ -23,4 +23,4 @@ class PlayerRemoved extends LobbyEvent {
   List<Object> get props => [player];
 }
 
-class GameStarted extends LobbyEvent {}
+class GameStarted extends PuzzleEvent {}
