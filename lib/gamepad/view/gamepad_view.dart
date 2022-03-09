@@ -5,8 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:js/js.dart';
 import 'package:puzzlehack/gamepad/gamepad.dart';
 import 'package:puzzlehack/interop.dart';
-
-enum Direction { none, up, right, down, left }
+import 'package:puzzlehack/models/models.dart';
 
 class GamepadView extends StatefulWidget {
   const GamepadView({Key? key, required this.channelId}) : super(key: key);
@@ -19,7 +18,7 @@ class GamepadView extends StatefulWidget {
 
 class _GamepadViewState extends State<GamepadView>
     with TickerProviderStateMixin {
-  Direction direction = Direction.none;
+  GamepadInput? input;
 
   late final AnimationController _controller = AnimationController(
     duration: const Duration(milliseconds: 300),
@@ -46,6 +45,7 @@ class _GamepadViewState extends State<GamepadView>
 
   @override
   Widget build(BuildContext context) {
+    var gamepadBloc = context.read<GamepadBloc>();
     return BlocBuilder<GamepadBloc, GamepadState>(
       builder: (context, state) {
         if (state.status == GamepadStatus.initial) {
@@ -68,7 +68,7 @@ class _GamepadViewState extends State<GamepadView>
               child: GestureDetector(
                 onPanStart: _onPanStart,
                 onPanUpdate: _onPanUpdate,
-                onPanEnd: (details) => _onPanEnd(context, details),
+                onPanEnd: (details) => _onPanEnd(gamepadBloc, details),
                 child: Container(
                   color: Colors.purple.shade900,
                   child: Center(
@@ -98,7 +98,8 @@ class _GamepadViewState extends State<GamepadView>
                               child: FadeTransition(
                                 opacity: _opacity,
                                 child: RotatedBox(
-                                  quarterTurns: direction.index,
+                                  quarterTurns:
+                                      input != null ? input!.index + 1 : 0,
                                   child: const Icon(
                                     Icons.chevron_left_sharp,
                                     size: 400,
@@ -134,19 +135,20 @@ class _GamepadViewState extends State<GamepadView>
     _dy += details.delta.dy;
 
     var dir = _dx.abs() > _dy.abs()
-        ? (_dx > 0 ? Direction.right : Direction.left)
-        : (_dy > 0 ? Direction.down : Direction.up);
+        ? (_dx > 0 ? GamepadInput.right : GamepadInput.left)
+        : (_dy > 0 ? GamepadInput.down : GamepadInput.up);
 
-    if (dir == direction) return;
+    if (dir == input) return;
 
     setState(() {
-      direction = dir;
+      input = dir;
     });
   }
 
-  _onPanEnd(context, details) {
+  _onPanEnd(GamepadBloc bloc, details) {
     _dx = _dy = 0;
-    if (direction != Direction.none) {
+    if (input != null) {
+      bloc.add(InputRegistered(input!));
       _controller.forward(from: 0);
     }
   }

@@ -13,6 +13,7 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
     on<PlayerAdded>(_onPlayerAdded);
     on<PlayerRemoved>(_onPlayerRemoved);
     on<GameStarted>(_onGameStarted);
+    on<GamepadInputRegistered>(_onGamepadInputRegistered);
   }
 
   _onPlayerAdded(PlayerAdded event, Emitter<PuzzleState> emit) {
@@ -28,5 +29,11 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
   _onGameStarted(GameStarted event, Emitter<PuzzleState> emit) {
     Interop.setGameState("playing");
     emit(state.copyWith(status: Status.playing));
+  }
+
+  _onGamepadInputRegistered(
+      GamepadInputRegistered event, Emitter<PuzzleState> emit) {
+    var input = GamepadInput.values[event.input];
+    print("Player ${event.playerId} moved: $input");
   }
 }

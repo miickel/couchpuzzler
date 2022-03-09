@@ -24,3 +24,13 @@ class PlayerRemoved extends PuzzleEvent {
 }
 
 class GameStarted extends PuzzleEvent {}
+
+class GamepadInputRegistered extends PuzzleEvent {
+  final String playerId;
+  final int input;
+
+  const GamepadInputRegistered(this.playerId, this.input);
+
+  @override
+  List<Object> get props => [playerId, input];
+}

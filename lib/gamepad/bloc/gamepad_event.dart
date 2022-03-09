@@ -19,4 +19,16 @@ class GameStateChanged extends GamepadEvent {
   final String state;
 
   const GameStateChanged(this.state);
+
+  @override
+  List<Object> get props => [state];
+}
+
+class InputRegistered extends GamepadEvent {
+  final GamepadInput input;
+
+  const InputRegistered(this.input);
+
+  @override
+  List<Object> get props => [input];
 }
