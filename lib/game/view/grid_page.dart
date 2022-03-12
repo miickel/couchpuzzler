@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:puzzlehack/puzzle/puzzle.dart';
 
 class GridPage extends StatefulWidget {
   const GridPage({Key? key}) : super(key: key);
@@ -10,45 +12,45 @@ class GridPage extends StatefulWidget {
 class _GridPageState extends State<GridPage> {
   @override
   Widget build(BuildContext context) {
-    var deviceData = MediaQuery.of(context);
-    var padding = deviceData.size.width * .015;
+    return BlocBuilder<PuzzleBloc, PuzzleState>(builder: (context, state) {
+      var deviceData = MediaQuery.of(context);
+      var padding = deviceData.size.width * .015;
 
-    const numPuzzles = 8;
+      var gridSpec = _getGridSpec(state.numberOfPlayers, deviceData.size.width);
+      var widgets = <Widget>[];
 
-    var gridSpec = _getGridSpec(numPuzzles, deviceData.size.width);
-    var widgets = <Widget>[];
+      for (var i = 0; i < gridSpec.rows; i++) {
+        var children = <Widget>[];
 
-    for (var i = 0; i < gridSpec.rows; i++) {
-      var children = <Widget>[];
+        for (var i = 0; i < gridSpec.cols; i++) {
+          children.add(const Puzzle());
+        }
 
-      for (var i = 0; i < gridSpec.cols; i++) {
-        children.add(const Puzzle());
+        var row = Expanded(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: children,
+          ),
+          flex: 1,
+        );
+
+        widgets.add(row);
       }
 
-      var row = Expanded(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: children,
-        ),
-        flex: 1,
-      );
-
-      widgets.add(row);
-    }
-
-    return Scaffold(
-      body: Container(
-        color: Colors.black,
-        child: Padding(
-          padding: EdgeInsets.all(padding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: widgets,
+      return Scaffold(
+        body: Container(
+          color: Colors.black,
+          child: Padding(
+            padding: EdgeInsets.all(padding),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: widgets,
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
