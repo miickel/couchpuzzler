@@ -12,15 +12,16 @@ class _GridPageState extends State<GridPage> {
   Widget build(BuildContext context) {
     var deviceData = MediaQuery.of(context);
     var padding = deviceData.size.width * .015;
-    const numCols = 3;
-    const numRows = 1;
 
+    const numPuzzles = 8;
+
+    var gridSpec = _getGridSpec(numPuzzles, deviceData.size.width);
     var widgets = <Widget>[];
 
-    for (var i = 0; i < numRows; i++) {
+    for (var i = 0; i < gridSpec.rows; i++) {
       var children = <Widget>[];
 
-      for (var i = 0; i < numCols; i++) {
+      for (var i = 0; i < gridSpec.cols; i++) {
         children.add(const Puzzle());
       }
 
@@ -73,13 +74,13 @@ class Puzzle extends StatelessWidget {
                 AspectRatio(
                   aspectRatio: 1,
                   child: Container(
-                    color: Colors.amber,
+                    color: Colors.blue,
                   ),
                 ),
-                SizedBox(height: padding / 2),
+                SizedBox(height: padding),
                 const Expanded(
                   child: LinearProgressIndicator(
-                    color: Colors.amber,
+                    color: Colors.blue,
                     minHeight: 16,
                     value: .5,
                   ),
@@ -91,4 +92,32 @@ class Puzzle extends StatelessWidget {
       ),
     );
   }
+}
+
+GridSpec _getGridSpec(int numPuzzles, double width) {
+  if (width >= 650) {
+    if (numPuzzles > 3) {
+      return GridSpec(rows: 2, cols: (numPuzzles / 2).ceil());
+    } else {
+      return GridSpec(rows: 1, cols: numPuzzles);
+    }
+  } else if (width >= 400) {
+    if (numPuzzles > 6) {
+      return GridSpec(rows: (numPuzzles / 3).ceil(), cols: 3);
+    } else if (numPuzzles > 2) {
+      return GridSpec(rows: (numPuzzles / 2).ceil(), cols: 2);
+    }
+  } else {
+    if (numPuzzles > 3) {
+      return GridSpec(rows: (numPuzzles / 2).ceil(), cols: 2);
+    }
+  }
+  return GridSpec(rows: numPuzzles, cols: 1);
+}
+
+class GridSpec {
+  final int rows;
+  final int cols;
+
+  GridSpec({required this.rows, required this.cols});
 }
