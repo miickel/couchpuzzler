@@ -4,7 +4,7 @@ enum Status { lobby, playing }
 
 class PuzzleState extends Equatable {
   const PuzzleState({
-    this.status = Status.lobby,
+    this.status = Status.playing,
     this.players = const [],
   });
 
