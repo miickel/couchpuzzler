@@ -22,7 +22,7 @@ class GamepadBloc extends Bloc<GamepadEvent, GamepadState> {
     Interop.join(event.channelId, player);
 
     emit(state.copyWith(
-      status: GamepadStatus.playing,
+      status: GamepadStatus.waiting,
       player: Player.fromJsPlayer(player),
     ));
   }
@@ -44,7 +44,10 @@ class GamepadBloc extends Bloc<GamepadEvent, GamepadState> {
   }
 
   _onGamepadPressed(InputRegistered event, Emitter<GamepadState> emit) {
-    if (state.status != GamepadStatus.playing) return false;
     Interop.registerInput(state.player!.id, event.input.index);
+    if (state.status == GamepadStatus.waiting &&
+        event.input == GamepadInput.ready) {
+      emit(state.copyWith(status: GamepadStatus.ready));
+    }
   }
 }

@@ -160,9 +160,9 @@ class _JoinInstructions extends StatelessWidget {
     var children = state.players.map(
       (e) {
         var theme = state.themeForPlayer(state.players.indexOf(e));
-        return SizedBox(
-          width: 24,
-          height: 24,
+        var ready = state.playersReady[e.id] == true;
+        return SizedBox.square(
+          dimension: 24,
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(1000),
@@ -177,9 +177,14 @@ class _JoinInstructions extends StatelessWidget {
                 ),
               ],
             ),
-            child: const AspectRatio(
-              aspectRatio: 1,
-            ),
+            child: ready
+                ? const Center(
+                    child: Icon(
+                    Icons.check,
+                    size: 14,
+                    color: Colors.black87,
+                  ))
+                : const SizedBox(),
           ),
         );
       },

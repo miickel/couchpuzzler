@@ -1,6 +1,6 @@
 part of 'gamepad_bloc.dart';
 
-enum GamepadStatus { initial, waiting, playing }
+enum GamepadStatus { initial, waiting, ready, playing }
 
 class GamepadState extends Equatable {
   const GamepadState(

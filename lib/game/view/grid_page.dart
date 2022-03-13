@@ -124,6 +124,14 @@ class _Puzzle extends StatelessWidget {
                     child: Stack(children: tiles),
                   ),
                 ),
+                SizedBox(height: padding),
+                Text(
+                  playerTheme.name,
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: playerTheme.primaryColor,
+                  ),
+                ),
               ],
             ),
           ),

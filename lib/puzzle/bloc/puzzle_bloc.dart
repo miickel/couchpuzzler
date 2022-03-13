@@ -57,6 +57,20 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
           var jsPlayer = JsPlayer(id: player.id, theme: player.theme);
           Interop.updatePlayer(jsPlayer);
           emit(state.copyWith(players: players));
+        } else if (input == GamepadInput.ready) {
+          var playersReady = {...state.playersReady, player.id: true};
+
+          if (playersReady.length == state.numberOfPlayers) {
+            final puzzle = _generatePuzzle(3, shuffle: true);
+            var puzzles = {for (var p in state.players) p.id: puzzle};
+            Interop.setGameState("playing");
+            return emit(state.copyWith(
+              status: Status.playing,
+              puzzles: puzzles,
+            ));
+          }
+
+          emit(state.copyWith(playersReady: playersReady));
         }
         break;
       case Status.playing:

@@ -58,14 +58,6 @@ class _GamepadViewState extends State<GamepadView>
           );
         }
 
-        if (state.status == GamepadStatus.waiting) {
-          return const Scaffold(
-            body: Center(
-              child: Text("Waiting for host to start the game."),
-            ),
-          );
-        }
-
         return Scaffold(
           body: Column(children: [
             Expanded(
@@ -73,21 +65,89 @@ class _GamepadViewState extends State<GamepadView>
                 onPanStart: _onPanStart,
                 onPanUpdate: _onPanUpdate,
                 onPanEnd: (details) => _onPanEnd(gamepadBloc, details),
-                child: Container(
-                  color: state.theme.primaryColor,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 350),
+                  curve: Curves.easeOut,
+                  color: state.status == GamepadStatus.ready
+                      ? Colors.white
+                      : state.theme.primaryColor,
                   child: Stack(
                     children: [
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 32),
-                          child: Text(
-                            state.theme.name,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 32,
-                              color: Colors.black54,
+                      if (state.status == GamepadStatus.waiting)
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 32),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                const SizedBox(height: 16),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.black38,
+                                    onPrimary: Colors.white,
+                                  ),
+                                  onPressed: () => gamepadBloc.add(
+                                    const InputRegistered(GamepadInput.ready),
+                                  ),
+                                  child: const Text("Tap here when ready!"),
+                                ),
+                              ],
                             ),
+                          ),
+                        ),
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 32),
+                          child: Column(
+                            children: [
+                              Text(
+                                state.theme.name,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 32,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                              if (state.status == GamepadStatus.waiting) ...[
+                                const SizedBox(height: 16),
+                                const Text(
+                                  "Swipe 👆 / 👇 for 🌈",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ],
+                              if (state.status == GamepadStatus.ready) ...[
+                                const SizedBox(height: 16),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: const [
+                                    SizedBox(
+                                      width: 12,
+                                      height: 12,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.black38,
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      "Waiting on opponents...",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ],
                           ),
                         ),
                       ),

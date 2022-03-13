@@ -1,1 +1,1 @@
-enum GamepadInput { up, right, down, left }
+enum GamepadInput { up, right, down, left, ready }
