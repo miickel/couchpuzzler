@@ -21,6 +21,8 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
     if (!state.players.any((e) => e.id == event.player.id)) {
       var player = _changePlayerTheme(event.player, 1);
       var players = state.players.toList()..add(player);
+      var jsPlayer = JsPlayer(id: player.id, theme: player.theme);
+      Interop.updatePlayer(jsPlayer);
       emit(state.copyWith(players: players));
     }
   }
@@ -46,8 +48,11 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
       case Status.lobby:
         if (input == GamepadInput.up || input == GamepadInput.down) {
           var players = state.players.toList();
-          players[playerIndex] =
-              _changePlayerTheme(player, input == GamepadInput.up ? 1 : -1);
+          var step = input == GamepadInput.up ? 1 : -1;
+          player = _changePlayerTheme(player, step);
+          players[playerIndex] = player;
+          var jsPlayer = JsPlayer(id: player.id, theme: player.theme);
+          Interop.updatePlayer(jsPlayer);
           emit(state.copyWith(players: players));
         }
         break;

@@ -135,10 +135,18 @@
         this.channel.get('state').on((state) => {
           if (this.onGameStateChange) this.onGameStateChange(state)
         })
+
+        this.channel.get('players').get(player.id).on((player) => {
+          if (this.onPlayerChange) this.onPlayerChange(player)
+        })
       },
 
       setGameState: function(state) {
         this.channel.get('state').put(state)
+      },
+
+      updatePlayer: function(player) {
+        this.channel.get('players').get(player.id).put(player)
       },
 
       registerInput: function(playerId, input) {

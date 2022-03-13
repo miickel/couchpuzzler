@@ -9,6 +9,7 @@ class Interop {
   external static void ready(String channelId);
   external static void join(String channelId, JsPlayer player);
   external static void setGameState(String state);
+  external static void updatePlayer(JsPlayer player);
   external static void registerInput(String playerId, int input);
   external static set onPlayerChange(void Function(JsPlayer player) f);
   external static set onGameStateChange(void Function(String state) f);

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,6 +41,9 @@ class _GamepadViewState extends State<GamepadView>
     Interop.onGameStateChange = allowInterop((state) {
       bloc.add(GameStateChanged(state));
     });
+    Interop.onPlayerChange = allowInterop((player) {
+      bloc.add(PlayerChanged(player));
+    });
     super.initState();
   }
 
@@ -70,48 +74,66 @@ class _GamepadViewState extends State<GamepadView>
                 onPanUpdate: _onPanUpdate,
                 onPanEnd: (details) => _onPanEnd(gamepadBloc, details),
                 child: Container(
-                  color: Colors.purple.shade900,
-                  child: Center(
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          FractionallySizedBox(
-                            widthFactor: .18,
-                            child: Center(
-                              child: AspectRatio(
-                                aspectRatio: 1,
-                                child: Transform.rotate(
-                                  angle: pi / 4,
-                                  child: Container(
-                                    color: Colors.purple.shade800,
-                                  ),
-                                ),
-                              ),
+                  color: state.theme.primaryColor,
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 32),
+                          child: Text(
+                            state.theme.name,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 32,
+                              color: Colors.black54,
                             ),
                           ),
-                          FittedBox(
-                            fit: BoxFit.cover,
-                            child: ScaleTransition(
-                              scale: _scale,
-                              child: FadeTransition(
-                                opacity: _opacity,
-                                child: RotatedBox(
-                                  quarterTurns:
-                                      input != null ? input!.index + 1 : 0,
-                                  child: const Icon(
-                                    Icons.chevron_left_sharp,
-                                    size: 400,
-                                    color: Colors.tealAccent,
+                        ),
+                      ),
+                      Center(
+                        child: AspectRatio(
+                          aspectRatio: 1,
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              FractionallySizedBox(
+                                widthFactor: .18,
+                                child: Center(
+                                  child: AspectRatio(
+                                    aspectRatio: 1,
+                                    child: Transform.rotate(
+                                      angle: pi / 4,
+                                      child: Container(
+                                        color: Colors.white30,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          )
-                        ],
+                              FittedBox(
+                                fit: BoxFit.cover,
+                                child: ScaleTransition(
+                                  scale: _scale,
+                                  child: FadeTransition(
+                                    opacity: _opacity,
+                                    child: RotatedBox(
+                                      quarterTurns:
+                                          input != null ? input!.index + 1 : 0,
+                                      child: const Icon(
+                                        Icons.chevron_left_sharp,
+                                        size: 400,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),

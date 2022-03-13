@@ -5,10 +5,16 @@ class Player extends Equatable {
   final String id;
   final int theme;
 
-  const Player({required this.id, this.theme = 0});
+  const Player({
+    required this.id,
+    this.theme = 0,
+  });
 
   static fromJsPlayer(JsPlayer player) {
-    return Player(id: player.id);
+    return Player(
+      id: player.id,
+      theme: player.theme,
+    );
   }
 
   Player copyWith({
