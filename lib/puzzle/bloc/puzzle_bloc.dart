@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:puzzlehack/interop.dart';
 import 'package:puzzlehack/models/models.dart';
 
@@ -34,8 +35,8 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
   }
 
   _onGameStarted(GameStarted event, Emitter<PuzzleState> emit) {
-    final puzzle = _generatePuzzle(3, shuffle: false);
-    var puzzles = {for (var p in state.players) p.id: puzzle.sort()};
+    final puzzle = _generatePuzzle(3, shuffle: true);
+    var puzzles = {for (var p in state.players) p.id: puzzle};
     Interop.setGameState("playing");
     emit(state.copyWith(status: Status.playing, puzzles: puzzles));
   }
@@ -59,6 +60,30 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
         }
         break;
       case Status.playing:
+        Tile? tile;
+        var puzzle = state.puzzles[event.playerId]!;
+
+        if (input == GamepadInput.down) {
+          tile = puzzle.getTileRelativeToWhitespaceTile(const Offset(0, -1));
+        } else if (input == GamepadInput.up) {
+          tile = puzzle.getTileRelativeToWhitespaceTile(const Offset(0, 1));
+        } else if (input == GamepadInput.right) {
+          tile = puzzle.getTileRelativeToWhitespaceTile(const Offset(-1, 0));
+        } else {
+          tile = puzzle.getTileRelativeToWhitespaceTile(const Offset(1, 0));
+        }
+
+        if (tile != null) {
+          if (puzzle.isTileMovable(tile)) {
+            final mutablePuzzle = Puzzle(tiles: [...puzzle.tiles]);
+            final newPuzzles = {
+              ...state.puzzles,
+              player.id: mutablePuzzle.moveTiles(tile, []),
+            };
+            emit(state.copyWith(puzzles: newPuzzles));
+          }
+        }
+
         break;
     }
   }
