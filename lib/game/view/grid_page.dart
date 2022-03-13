@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:puzzlehack/models/models.dart';
 import 'package:puzzlehack/puzzle/puzzle.dart';
 
 class GridPage extends StatefulWidget {
@@ -18,12 +19,18 @@ class _GridPageState extends State<GridPage> {
 
       var gridSpec = _getGridSpec(state.numberOfPlayers, deviceData.size.width);
       var widgets = <Widget>[];
+      var playerIndex = 0;
 
       for (var i = 0; i < gridSpec.rows; i++) {
         var children = <Widget>[];
 
-        for (var i = 0; i < gridSpec.cols; i++) {
-          children.add(const Puzzle());
+        for (var i = 0;
+            i < gridSpec.cols && playerIndex < state.numberOfPlayers;
+            i++) {
+          var player = state.players[playerIndex];
+          var playerTheme = state.themeForPlayer(playerIndex);
+          children.add(Puzzle(player: player, playerTheme: playerTheme));
+          playerIndex++;
         }
 
         var row = Expanded(
@@ -55,7 +62,11 @@ class _GridPageState extends State<GridPage> {
 }
 
 class Puzzle extends StatelessWidget {
-  const Puzzle({Key? key}) : super(key: key);
+  const Puzzle({Key? key, required this.player, required this.playerTheme})
+      : super(key: key);
+
+  final Player player;
+  final PlayerTheme playerTheme;
 
   @override
   Widget build(BuildContext context) {
@@ -76,13 +87,14 @@ class Puzzle extends StatelessWidget {
                 AspectRatio(
                   aspectRatio: 1,
                   child: Container(
-                    color: Colors.blue,
+                    color: playerTheme.primaryColor,
                   ),
                 ),
                 SizedBox(height: padding),
                 const Expanded(
                   child: LinearProgressIndicator(
-                    color: Colors.blue,
+                    color: Colors.white70,
+                    backgroundColor: Colors.white24,
                     minHeight: 16,
                     value: .5,
                   ),
