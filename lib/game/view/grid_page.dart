@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:puzzlehack/game/view/puzzle_tile.dart';
 import 'package:puzzlehack/models/models.dart';
 import 'package:puzzlehack/puzzle/puzzle.dart';
 
@@ -29,7 +30,11 @@ class _GridPageState extends State<GridPage> {
             i++) {
           var player = state.players[playerIndex];
           var playerTheme = state.themeForPlayer(playerIndex);
-          children.add(Puzzle(player: player, playerTheme: playerTheme));
+          children.add(_Puzzle(
+            player: player,
+            playerTheme: playerTheme,
+            puzzle: state.puzzles[player.id]!,
+          ));
           playerIndex++;
         }
 
@@ -61,17 +66,28 @@ class _GridPageState extends State<GridPage> {
   }
 }
 
-class Puzzle extends StatelessWidget {
-  const Puzzle({Key? key, required this.player, required this.playerTheme})
-      : super(key: key);
+class _Puzzle extends StatelessWidget {
+  const _Puzzle({
+    Key? key,
+    required this.player,
+    required this.playerTheme,
+    required this.puzzle,
+  }) : super(key: key);
 
   final Player player;
   final PlayerTheme playerTheme;
+  final Puzzle puzzle;
 
   @override
   Widget build(BuildContext context) {
     var deviceData = MediaQuery.of(context);
     var padding = deviceData.size.width * .008;
+
+    final size = puzzle.getDimension();
+    if (size == 0) return const CircularProgressIndicator();
+
+    final tiles =
+        puzzle.tiles.map((t) => PuzzleTile(tile: t, puzzle: puzzle)).toList();
 
     return Expanded(
       flex: 1,
@@ -88,6 +104,7 @@ class Puzzle extends StatelessWidget {
                   aspectRatio: 1,
                   child: Container(
                     color: playerTheme.primaryColor,
+                    child: Stack(children: tiles),
                   ),
                 ),
                 SizedBox(height: padding),
