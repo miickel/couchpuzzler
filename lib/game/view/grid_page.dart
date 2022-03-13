@@ -51,7 +51,15 @@ class _GridPageState extends State<GridPage> {
 
       return Scaffold(
         body: Container(
-          color: Colors.black,
+          decoration: const BoxDecoration(
+              gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 29, 25, 39),
+              Color.fromARGB(255, 9, 6, 17),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          )),
           child: Padding(
             padding: EdgeInsets.all(padding),
             child: Column(
@@ -103,19 +111,19 @@ class _Puzzle extends StatelessWidget {
                 AspectRatio(
                   aspectRatio: 1,
                   child: Container(
-                    color: playerTheme.primaryColor,
+                    decoration: BoxDecoration(
+                      color: playerTheme.primaryColor.withAlpha(50),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(padding * 6),
+                      ),
+                      border: Border.all(
+                        color: playerTheme.primaryColor,
+                        width: padding / 2,
+                      ),
+                    ),
                     child: Stack(children: tiles),
                   ),
                 ),
-                SizedBox(height: padding),
-                const Expanded(
-                  child: LinearProgressIndicator(
-                    color: Colors.white70,
-                    backgroundColor: Colors.white24,
-                    minHeight: 16,
-                    value: .5,
-                  ),
-                )
               ],
             ),
           ),

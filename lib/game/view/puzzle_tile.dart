@@ -31,23 +31,24 @@ class _PuzzleTileState extends State<PuzzleTile> {
             (widget.tile.currentPosition.x - 1) / (size - 1),
             (widget.tile.currentPosition.y - 1) / (size - 1),
           ),
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeOutCirc,
           child: SizedBox.square(
             dimension: constraints.maxWidth / size,
             child: Padding(
               padding: EdgeInsets.all(constraints.maxWidth * .05),
               child: Container(
                 decoration: const BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.black26,
                   borderRadius: BorderRadius.all(Radius.circular(1000)),
                 ),
                 child: Center(
                   child: Text(
                     widget.tile.value.toString(),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 32,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: constraints.maxWidth / 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
