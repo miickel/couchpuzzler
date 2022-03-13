@@ -137,17 +137,59 @@ class _JoinInstructions extends StatelessWidget {
                   gapless: false,
                   foregroundColor: Colors.purple.shade900,
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 48),
                 if (state.numberOfPlayers == 0) ...[
                   _WaitingButton()
                 ] else ...[
                   _ReadyButton()
                 ],
+                const SizedBox(height: 32),
+                SizedBox(
+                  child: _buildPlayerList(state),
+                  width: 180,
+                ),
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildPlayerList(PuzzleState state) {
+    var children = state.players.map(
+      (e) {
+        var theme = state.themeForPlayer(state.players.indexOf(e));
+        return SizedBox(
+          width: 24,
+          height: 24,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(1000),
+              color: theme.primaryColor,
+              border: Border.all(color: Colors.black26, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.primaryColor.withAlpha(120),
+                  spreadRadius: 3,
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: const AspectRatio(
+              aspectRatio: 1,
+            ),
+          ),
+        );
+      },
+    ).toList();
+
+    return Wrap(
+      children: children,
+      spacing: 16,
+      runSpacing: 16,
+      alignment: WrapAlignment.center,
     );
   }
 }
