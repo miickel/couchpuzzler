@@ -122,7 +122,7 @@ class __CountDownState extends State<_CountDown> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.isCountdownRunning) {
+    if (!widget.isCountdownRunning || widget.secondsToBegin > 3) {
       return const SizedBox();
     }
     return FadeTransition(
