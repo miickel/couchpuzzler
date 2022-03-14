@@ -33,7 +33,8 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
   StreamSubscription<int>? _tickerSubscription;
 
   _onPlayerAdded(PlayerAdded event, Emitter<PuzzleState> emit) {
-    if (!state.players.any((e) => e.id == event.player.id)) {
+    if (state.numberOfPlayers < 8 &&
+        !state.players.any((e) => e.id == event.player.id)) {
       var player = _changePlayerTheme(event.player, 1);
       var players = state.players.toList()..add(player);
       var jsPlayer = JsPlayer(id: player.id, theme: player.theme);
@@ -119,14 +120,25 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
         if (tile != null) {
           if (puzzle.isTileMovable(tile)) {
             final mutablePuzzle = Puzzle(tiles: [...puzzle.tiles]);
+            final newPuzzle = mutablePuzzle.moveTiles(tile, []);
             final newPuzzles = {
               ...state.puzzles,
-              player.id: mutablePuzzle.moveTiles(tile, []),
+              player.id: newPuzzle,
             };
-            emit(state.copyWith(puzzles: newPuzzles));
+            if (newPuzzle.isComplete()) {
+              emit(state.copyWith(
+                puzzles: newPuzzles,
+                status: Status.complete,
+                winner: playerIndex,
+              ));
+            } else {
+              emit(state.copyWith(puzzles: newPuzzles));
+            }
           }
         }
 
+        break;
+      case Status.complete:
         break;
     }
   }

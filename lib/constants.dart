@@ -19,11 +19,11 @@ const playerThemes = [
     primaryColor: Color(0xff1C6E7D),
   ),
   PlayerTheme(
-    name: "Celestial Blue",
+    name: "Celestial",
     primaryColor: Color(0xff4A9BDC),
   ),
   PlayerTheme(
-    name: "Dark Turquoise",
+    name: "Turquoise",
     primaryColor: Color(0xff00D1D8),
   ),
   PlayerTheme(

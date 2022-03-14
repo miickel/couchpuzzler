@@ -30,6 +30,7 @@ class _GameViewState extends State<GameView> {
         case Status.lobby:
           return const LobbyPage();
         case Status.playing:
+        case Status.complete:
           return const GridPage();
       }
     });

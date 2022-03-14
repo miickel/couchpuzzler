@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:puzzlehack/game/view/puzzle_tile.dart';
@@ -149,7 +152,7 @@ class __CountDownState extends State<_CountDown> with TickerProviderStateMixin {
   }
 }
 
-class _Puzzle extends StatelessWidget {
+class _Puzzle extends StatefulWidget {
   const _Puzzle({
     Key? key,
     required this.player,
@@ -162,72 +165,124 @@ class _Puzzle extends StatelessWidget {
   final Puzzle puzzle;
 
   @override
+  State<_Puzzle> createState() => _PuzzleState();
+}
+
+class _PuzzleState extends State<_Puzzle> {
+  final ConfettiController _confetti = ConfettiController(
+      duration: const Duration(
+    seconds: 3,
+  ));
+
+  @override
+  void dispose() {
+    _confetti.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var deviceData = MediaQuery.of(context);
     var padding = deviceData.size.width * .008;
 
-    final size = puzzle.getDimension();
+    final size = widget.puzzle.getDimension();
     if (size == 0) return const CircularProgressIndicator();
 
     var isCountdownRunning =
         context.select((PuzzleBloc b) => b.state.isCountdownRunning);
+    var isCompleted =
+        context.select((PuzzleBloc b) => b.state.status == Status.complete);
+    var champion = context.select((PuzzleBloc b) => b.state.champion);
 
-    final tiles = puzzle.tiles
+    final tiles = widget.puzzle.tiles
         .map((t) => PuzzleTile(
               tile: t,
-              puzzle: puzzle,
+              puzzle: widget.puzzle,
               isCountdownRunning: isCountdownRunning,
             ))
         .toList();
 
-    return Expanded(
-      flex: 1,
-      child: Center(
-        child: AspectRatio(
-          aspectRatio: .8,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              FractionallySizedBox(
-                widthFactor: .9,
+    return BlocBuilder<PuzzleBloc, PuzzleState>(
+      buildWhen: (prev, state) {
+        if (prev.champion != state.champion &&
+            state.champion == widget.player) {
+          _confetti.play();
+        }
+        return false;
+      },
+      builder: (context, state) {
+        return Expanded(
+          flex: 1,
+          child: AnimatedScale(
+            scale: isCompleted ? (champion == widget.player ? 1 : .7) : 1,
+            duration: const Duration(milliseconds: 800),
+            curve: Curves.bounceOut,
+            child: AnimatedOpacity(
+              opacity: isCompleted ? (champion == widget.player ? 1 : .6) : 1,
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.bounceOut,
+              child: Center(
                 child: AspectRatio(
-                  aspectRatio: 1,
-                  child: LayoutBuilder(builder: (context, constraints) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: playerTheme.primaryColor.withAlpha(50),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(constraints.maxWidth * .1),
-                        ),
-                        border: Border.all(
-                          color: playerTheme.primaryColor,
-                          width: constraints.maxWidth * .01,
+                  aspectRatio: .8,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      FractionallySizedBox(
+                        widthFactor: .9,
+                        child: AspectRatio(
+                          aspectRatio: 1,
+                          child: LayoutBuilder(builder: (context, constraints) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: widget.playerTheme.primaryColor
+                                    .withAlpha(50),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(constraints.maxWidth * .1),
+                                ),
+                                border: Border.all(
+                                  color: widget.playerTheme.primaryColor,
+                                  width: constraints.maxWidth * .01,
+                                ),
+                              ),
+                              child: Padding(
+                                padding:
+                                    EdgeInsets.all(constraints.maxWidth * .05),
+                                child: Stack(children: tiles),
+                              ),
+                            );
+                          }),
                         ),
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.all(constraints.maxWidth * .05),
-                        child: Stack(children: tiles),
+                      SizedBox(height: padding),
+                      ConfettiWidget(
+                        confettiController: _confetti,
+                        blastDirection: 3 * pi / 2,
+                        maxBlastForce: 30,
+                        minBlastForce: 10,
+                        colors: [
+                          widget.playerTheme.primaryColor,
+                          Colors.white,
+                        ],
                       ),
-                    );
-                  }),
+                      LayoutBuilder(builder: (context, constraints) {
+                        return Text(
+                          widget.playerTheme.name,
+                          style: TextStyle(
+                            color: widget.playerTheme.primaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: constraints.maxWidth * .07,
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
                 ),
               ),
-              SizedBox(height: padding),
-              LayoutBuilder(builder: (context, constraints) {
-                return Text(
-                  playerTheme.name,
-                  style: TextStyle(
-                    color: playerTheme.primaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: constraints.maxWidth * .07,
-                  ),
-                );
-              }),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

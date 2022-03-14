@@ -1,6 +1,6 @@
 part of 'puzzle_bloc.dart';
 
-enum Status { lobby, playing }
+enum Status { lobby, playing, complete }
 
 class PuzzleState extends Equatable {
   const PuzzleState({
@@ -11,6 +11,7 @@ class PuzzleState extends Equatable {
     required this.playerThemes,
     required this.secondsToBegin,
     this.isCountdownRunning = false,
+    this.winner,
   });
 
   final Status status;
@@ -20,8 +21,10 @@ class PuzzleState extends Equatable {
   final List<PlayerTheme> playerThemes;
   final int secondsToBegin;
   final bool isCountdownRunning;
+  final int? winner;
 
   int get numberOfPlayers => players.length;
+  Player? get champion => status == Status.complete ? players[winner!] : null;
 
   PlayerTheme themeForPlayer(int playerIndex) =>
       playerThemes[players[playerIndex].theme];
@@ -34,6 +37,7 @@ class PuzzleState extends Equatable {
     List<PlayerTheme>? playerThemes,
     int? secondsToBegin,
     bool? isCountdownRunning,
+    int? winner,
   }) {
     return PuzzleState(
       status: status ?? this.status,
@@ -43,6 +47,7 @@ class PuzzleState extends Equatable {
       playerThemes: playerThemes ?? this.playerThemes,
       secondsToBegin: secondsToBegin ?? this.secondsToBegin,
       isCountdownRunning: isCountdownRunning ?? this.isCountdownRunning,
+      winner: winner ?? this.winner,
     );
   }
 
