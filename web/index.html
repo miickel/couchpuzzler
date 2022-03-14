@@ -107,12 +107,13 @@
 
     const Interop = {
       onPlayerChange: () => {},
-      onMove: () => {},
+      onGameStateChange: () => {},
+      onGamepadInput: () => {},
 
-      ready: function(channelId, player) {
+      ready: function(channelId) {
         if (this.channelId && this.channelId !== channelId) {
           this.playerListener.off()
-          this.movesListener.off()
+          this.inputListener.off()
         }
 
         this.channel = puzzle.get(channelId)
@@ -122,22 +123,34 @@
           if (this.onPlayerChange) this.onPlayerChange(player)
         })
 
-        this.movesListener = this.channel.get('moves').map().on((direction, playerId) => {
-          if (this.onMove) this.onMove(playerId, direction)
+        this.inputListener = this.channel.get('inputs').map().on((input, playerId) => {
+          if (this.onGamepadInput) this.onGamepadInput(playerId, input)
         })
-
-        if (!player.hosting) {
-          setTimeout(() => this.join(player), 500)
-          console.warn('joined channel', channelId)
-        }
       },
 
-      join: function(player) {
+      join: function(channelId, player) {
+        this.channel = puzzle.get(channelId)
+        this.channel.get('players').get(player.id).put(player)
+
+        this.channel.get('state').on((state) => {
+          if (this.onGameStateChange) this.onGameStateChange(state)
+        })
+
+        this.channel.get('players').get(player.id).on((player) => {
+          if (this.onPlayerChange) this.onPlayerChange(player)
+        })
+      },
+
+      setGameState: function(state) {
+        this.channel.get('state').put(state)
+      },
+
+      updatePlayer: function(player) {
         this.channel.get('players').get(player.id).put(player)
       },
 
-      move: function(playerId, direction) {
-        this.channel.get('moves').get(playerId).put(direction)
+      registerInput: function(playerId, input) {
+        this.channel.get('inputs').get(playerId).put(input)
       },
 
     }
