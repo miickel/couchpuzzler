@@ -7,6 +7,8 @@ import 'package:puzzlehack/models/models.dart';
 part 'puzzle_event.dart';
 part 'puzzle_state.dart';
 
+const _size = 3;
+
 class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
   PuzzleBloc({required this.playerThemes})
       : super(PuzzleState(playerThemes: playerThemes)) {
@@ -35,7 +37,7 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
   }
 
   _onGameStarted(GameStarted event, Emitter<PuzzleState> emit) {
-    final puzzle = _generatePuzzle(3, shuffle: true);
+    final puzzle = _generatePuzzle(_size, shuffle: true);
     var puzzles = {for (var p in state.players) p.id: puzzle};
     Interop.setGameState("playing");
     emit(state.copyWith(status: Status.playing, puzzles: puzzles));
@@ -61,7 +63,7 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
           var playersReady = {...state.playersReady, player.id: true};
 
           if (playersReady.length == state.numberOfPlayers) {
-            final puzzle = _generatePuzzle(3, shuffle: true);
+            final puzzle = _generatePuzzle(_size, shuffle: true);
             var puzzles = {for (var p in state.players) p.id: puzzle};
             Interop.setGameState("playing");
             return emit(state.copyWith(

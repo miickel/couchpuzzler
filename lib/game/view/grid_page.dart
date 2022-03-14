@@ -102,38 +102,51 @@ class _Puzzle extends StatelessWidget {
       child: Center(
         child: AspectRatio(
           aspectRatio: .9,
-          child: Padding(
-            padding: EdgeInsets.all(padding),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                AspectRatio(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              FractionallySizedBox(
+                widthFactor: .9,
+                child: AspectRatio(
                   aspectRatio: 1,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: playerTheme.primaryColor.withAlpha(50),
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(padding * 6),
+                  child: LayoutBuilder(builder: (context, constraints) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: playerTheme.primaryColor.withAlpha(50),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(constraints.maxWidth * .1),
+                        ),
+                        border: Border.all(
+                          color: playerTheme.primaryColor,
+                          width: constraints.maxWidth * .01,
+                        ),
                       ),
-                      border: Border.all(
-                        color: playerTheme.primaryColor,
-                        width: padding / 2,
+                      child: Padding(
+                        padding: EdgeInsets.all(constraints.maxWidth * .05),
+                        child: Stack(children: tiles),
                       ),
+                    );
+                  }),
+                ),
+              ),
+              SizedBox(height: padding * 2),
+              FractionallySizedBox(
+                widthFactor: .3,
+                alignment: Alignment.topCenter,
+                child: FittedBox(
+                  fit: BoxFit.fitWidth,
+                  alignment: Alignment.topCenter,
+                  child: Text(
+                    playerTheme.name,
+                    style: TextStyle(
+                      color: playerTheme.primaryColor,
+                      fontWeight: FontWeight.bold,
                     ),
-                    child: Stack(children: tiles),
                   ),
                 ),
-                SizedBox(height: padding),
-                Text(
-                  playerTheme.name,
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: playerTheme.primaryColor,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

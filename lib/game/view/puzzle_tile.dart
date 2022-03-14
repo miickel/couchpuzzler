@@ -36,20 +36,27 @@ class _PuzzleTileState extends State<PuzzleTile> {
           child: SizedBox.square(
             dimension: constraints.maxWidth / size,
             child: Padding(
-              padding: EdgeInsets.all(constraints.maxWidth * .05),
+              padding: EdgeInsets.all(constraints.maxWidth * .015),
               child: Container(
                 decoration: const BoxDecoration(
                   color: Colors.black26,
                   borderRadius: BorderRadius.all(Radius.circular(1000)),
                 ),
                 child: Center(
-                  child: Text(
-                    widget.tile.value.toString(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: constraints.maxWidth / 12,
-                      fontWeight: FontWeight.bold,
+                  child: FractionallySizedBox(
+                    widthFactor: .5,
+                    heightFactor: .5,
+                    alignment: Alignment.center,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Text(
+                        widget.tile.value.toString(),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ),
