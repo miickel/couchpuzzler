@@ -9,7 +9,7 @@ import 'package:puzzlehack/models/models.dart';
 part 'puzzle_event.dart';
 part 'puzzle_state.dart';
 
-const _size = 3;
+const _size = 4;
 const _countDown = 5;
 
 class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
@@ -63,7 +63,9 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
   _onCountdownTicked(CountdownTicked event, Emitter<PuzzleState> emit) {
     if (state.secondsToBegin == 0) {
       _tickerSubscription?.pause();
-      emit(state.copyWith(isCountdownRunning: false));
+      emit(state.copyWith(
+        isCountdownRunning: false,
+      ));
     } else {
       emit(state.copyWith(
         secondsToBegin: state.secondsToBegin - 1,
