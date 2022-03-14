@@ -28,7 +28,7 @@ class PuzzleApp extends StatelessWidget {
       routerDelegate: _router.routerDelegate,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.purple,
+        primarySwatch: Colors.brown,
       ),
     );
   }

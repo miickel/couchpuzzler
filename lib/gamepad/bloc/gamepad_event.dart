@@ -19,4 +19,25 @@ class GameStateChanged extends GamepadEvent {
   final String state;
 
   const GameStateChanged(this.state);
+
+  @override
+  List<Object> get props => [state];
+}
+
+class PlayerChanged extends GamepadEvent {
+  final JsPlayer player;
+
+  const PlayerChanged(this.player);
+
+  @override
+  List<Object> get props => [player];
+}
+
+class InputRegistered extends GamepadEvent {
+  final GamepadInput input;
+
+  const InputRegistered(this.input);
+
+  @override
+  List<Object> get props => [input];
 }

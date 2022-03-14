@@ -4,7 +4,12 @@ import 'package:js/js.dart';
 import 'package:puzzlehack/interop.dart';
 import 'package:puzzlehack/models/models.dart';
 import 'package:puzzlehack/puzzle/puzzle.dart';
+import 'package:puzzlehack/utils.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
+
+final host = html.window.location.hostname;
 
 class LobbyView extends StatefulWidget {
   const LobbyView({Key? key}) : super(key: key);
@@ -14,7 +19,7 @@ class LobbyView extends StatefulWidget {
 }
 
 class _LobbyViewState extends State<LobbyView> {
-  final _channelId = "tacotron";
+  final _channelId = Utils.getRandomString(6);
 
   @override
   void initState() {
@@ -25,7 +30,6 @@ class _LobbyViewState extends State<LobbyView> {
   }
 
   _onPlayerChange(JsPlayer player) {
-    debugPrint("Player changed ${player.id}");
     context.read<PuzzleBloc>().add(PlayerAdded(Player.fromJsPlayer(player)));
   }
 
@@ -72,13 +76,13 @@ class _Title extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                   Icon(
-                    Icons.local_pizza_sharp,
+                    Icons.cabin,
                     size: 128.0,
                     color: Colors.white,
                   ),
                   SizedBox(height: 16),
                   Text(
-                    "PuzzleHack",
+                    "CouchPuzzler",
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
@@ -87,7 +91,7 @@ class _Title extends StatelessWidget {
                   ),
                   SizedBox(height: 16),
                   Text(
-                    "A Flutter P2P Multipuzzler.",
+                    "A Flutter P2P Multiplayer Game.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
@@ -131,23 +135,79 @@ class _JoinInstructions extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
                 QrImage(
-                  data: 'http://ultimate-machine:8000#/join/$channelId',
+                  data: 'https://$host#/join/$channelId',
                   version: QrVersions.auto,
                   size: 240,
                   gapless: false,
                   foregroundColor: Colors.purple.shade900,
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 48),
                 if (state.numberOfPlayers == 0) ...[
                   _WaitingButton()
                 ] else ...[
                   _ReadyButton()
                 ],
+                const SizedBox(height: 32),
+                SizedBox(
+                  child: _buildPlayerList(state),
+                  width: 180,
+                ),
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildPlayerList(PuzzleState state) {
+    var children = state.players.map(
+      (e) {
+        var theme = state.themeForPlayer(state.players.indexOf(e));
+        var ready = state.playersReady[e.id] == true;
+        return SizedBox.square(
+          dimension: 32,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(1000),
+              color: theme.primaryColor,
+              border: Border.all(color: Colors.black26, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.primaryColor.withAlpha(ready ? 120 : 0),
+                  spreadRadius: 3,
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: ready
+                ? FractionallySizedBox(
+                    widthFactor: .95,
+                    heightFactor: .95,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(1000)),
+                      ),
+                      child: Icon(
+                        Icons.thumb_up,
+                        size: 14,
+                        color: theme.primaryColor,
+                      ),
+                    ),
+                  )
+                : const SizedBox(),
+          ),
+        );
+      },
+    ).toList();
+
+    return Wrap(
+      children: children,
+      spacing: 16,
+      runSpacing: 16,
+      alignment: WrapAlignment.center,
     );
   }
 }
