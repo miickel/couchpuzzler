@@ -66,8 +66,9 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
     } else {
       emit(state.copyWith(
         secondsToBegin: state.secondsToBegin - 1,
-        puzzles:
-            state.secondsToBegin < 4 ? _shufflePuzzles(true) : state.puzzles,
+        puzzles: state.secondsToBegin < 5 && state.secondsToBegin != 1
+            ? _shufflePuzzles(true)
+            : state.puzzles,
       ));
     }
   }
