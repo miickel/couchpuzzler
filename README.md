@@ -1,16 +1,12 @@
-# puzzlehack
+# CouchPuzzler
 
-A new Flutter project.
+[![Watch the demo on YouTube](https://img.youtube.com/vi/6T14xsYqE7M/0.jpg)](https://www.youtube.com/watch?v=6T14xsYqE7M)
 
-## Getting Started
+This is a P2P multiplayer sliding puzzle game with support for up to 8 players.
 
-This project is a starting point for a Flutter application.
+Best experienced on a TV from the comfort of your sofa.
 
-A few resources to get you started if this is your first Flutter project:
+Scan a QR-code to use your phone/tablet as a controller.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Built using Flutter and Gun.js for P2P.
