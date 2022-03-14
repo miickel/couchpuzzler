@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:puzzlehack/constants.dart';
 import 'package:puzzlehack/game/game.dart';
+import 'package:puzzlehack/models/models.dart';
 import 'package:puzzlehack/puzzle/puzzle.dart';
 
 class GamePage extends StatelessWidget {
@@ -10,7 +11,10 @@ class GamePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext context) => PuzzleBloc(playerThemes: playerThemes),
+      create: (BuildContext context) => PuzzleBloc(
+        playerThemes: playerThemes,
+        ticker: const Ticker(),
+      ),
       child: const GameView(),
     );
   }
