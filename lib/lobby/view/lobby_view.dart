@@ -160,7 +160,7 @@ class _JoinInstructions extends StatelessWidget {
     var children = state.players.map(
       (e) {
         var theme = state.themeForPlayer(state.players.indexOf(e));
-        var ready = state.playersReady[e.id] != true;
+        var ready = state.playersReady[e.id] == true;
         return SizedBox.square(
           dimension: 32,
           child: Container(

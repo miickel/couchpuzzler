@@ -61,18 +61,11 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
           emit(state.copyWith(players: players));
         } else if (input == GamepadInput.ready) {
           var playersReady = {...state.playersReady, player.id: true};
+          emit(state.copyWith(playersReady: playersReady));
 
           if (playersReady.length == state.numberOfPlayers) {
-            final puzzle = _generatePuzzle(_size, shuffle: true);
-            var puzzles = {for (var p in state.players) p.id: puzzle};
-            Interop.setGameState("playing");
-            return emit(state.copyWith(
-              status: Status.playing,
-              puzzles: puzzles,
-            ));
+            add(GameStarted());
           }
-
-          emit(state.copyWith(playersReady: playersReady));
         }
         break;
       case Status.playing:
