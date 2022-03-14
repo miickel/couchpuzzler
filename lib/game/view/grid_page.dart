@@ -4,6 +4,8 @@ import 'package:puzzlehack/game/view/puzzle_tile.dart';
 import 'package:puzzlehack/models/models.dart';
 import 'package:puzzlehack/puzzle/puzzle.dart';
 
+const countdownText = ["Go!", "One", "Two", "Three", "Four", "Five"];
+
 class GridPage extends StatefulWidget {
   const GridPage({Key? key}) : super(key: key);
 
@@ -50,27 +52,100 @@ class _GridPageState extends State<GridPage> {
       }
 
       return Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-              gradient: LinearGradient(
-            colors: [
-              Color.fromARGB(255, 29, 25, 39),
-              Color.fromARGB(255, 9, 6, 17),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          )),
-          child: Padding(
-            padding: EdgeInsets.all(padding),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: widgets,
+        body: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 29, 25, 39),
+                  Color.fromARGB(255, 9, 6, 17),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              )),
+              child: Padding(
+                padding: EdgeInsets.all(padding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: widgets,
+                ),
+              ),
             ),
-          ),
+            _CountDown(
+              isCountdownRunning: state.isCountdownRunning,
+              secondsToBegin: state.secondsToBegin,
+            ),
+          ],
         ),
       );
     });
+  }
+}
+
+class _CountDown extends StatefulWidget {
+  const _CountDown({
+    Key? key,
+    required this.secondsToBegin,
+    required this.isCountdownRunning,
+  }) : super(key: key);
+
+  final int secondsToBegin;
+  final bool isCountdownRunning;
+
+  @override
+  State<_CountDown> createState() => __CountDownState();
+}
+
+class __CountDownState extends State<_CountDown> with TickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(milliseconds: 1000),
+    vsync: this,
+  )..forward();
+
+  late final Animation<double> _scale = Tween(begin: 1.0, end: 0.85)
+      .animate(CurvedAnimation(parent: _controller, curve: Curves.bounceOut));
+
+  late final Animation<double> _opacity =
+      Tween(begin: 1.0, end: 0.0).animate(_controller);
+
+  @override
+  void didUpdateWidget(covariant _CountDown oldWidget) {
+    if (widget.isCountdownRunning &&
+        oldWidget.secondsToBegin != widget.secondsToBegin) {
+      _controller.forward(from: 0);
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.isCountdownRunning) {
+      return const SizedBox();
+    }
+    return FadeTransition(
+      opacity: _opacity,
+      child: ScaleTransition(
+        scale: _scale,
+        child: FractionallySizedBox(
+          widthFactor: 1,
+          heightFactor: 1,
+          child: FittedBox(
+            fit: BoxFit.fill,
+            child: Text(
+              countdownText[widget.secondsToBegin].toUpperCase(),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withAlpha(60),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -94,14 +169,22 @@ class _Puzzle extends StatelessWidget {
     final size = puzzle.getDimension();
     if (size == 0) return const CircularProgressIndicator();
 
-    final tiles =
-        puzzle.tiles.map((t) => PuzzleTile(tile: t, puzzle: puzzle)).toList();
+    var isCountdownRunning =
+        context.select((PuzzleBloc b) => b.state.isCountdownRunning);
+
+    final tiles = puzzle.tiles
+        .map((t) => PuzzleTile(
+              tile: t,
+              puzzle: puzzle,
+              isCountdownRunning: isCountdownRunning,
+            ))
+        .toList();
 
     return Expanded(
       flex: 1,
       child: Center(
         child: AspectRatio(
-          aspectRatio: .9,
+          aspectRatio: .8,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -130,22 +213,17 @@ class _Puzzle extends StatelessWidget {
                   }),
                 ),
               ),
-              SizedBox(height: padding * 2),
-              FractionallySizedBox(
-                widthFactor: .3,
-                alignment: Alignment.topCenter,
-                child: FittedBox(
-                  fit: BoxFit.fitWidth,
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    playerTheme.name,
-                    style: TextStyle(
-                      color: playerTheme.primaryColor,
-                      fontWeight: FontWeight.bold,
-                    ),
+              SizedBox(height: padding),
+              LayoutBuilder(builder: (context, constraints) {
+                return Text(
+                  playerTheme.name,
+                  style: TextStyle(
+                    color: playerTheme.primaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: constraints.maxWidth * .07,
                   ),
-                ),
-              ),
+                );
+              }),
             ],
           ),
         ),

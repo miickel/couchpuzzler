@@ -6,10 +6,12 @@ class PuzzleTile extends StatefulWidget {
     Key? key,
     required this.tile,
     required this.puzzle,
+    this.isCountdownRunning = true,
   }) : super(key: key);
 
   final Puzzle puzzle;
   final Tile tile;
+  final bool isCountdownRunning;
 
   @override
   State<PuzzleTile> createState() => _PuzzleTileState();
@@ -31,8 +33,11 @@ class _PuzzleTileState extends State<PuzzleTile> {
             (widget.tile.currentPosition.x - 1) / (size - 1),
             (widget.tile.currentPosition.y - 1) / (size - 1),
           ),
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.easeOutCirc,
+          duration:
+              Duration(milliseconds: widget.isCountdownRunning ? 900 : 400),
+          curve: widget.isCountdownRunning
+              ? Curves.easeInOutCubicEmphasized
+              : Curves.easeOutCirc,
           child: SizedBox.square(
             dimension: constraints.maxWidth / size,
             child: Padding(

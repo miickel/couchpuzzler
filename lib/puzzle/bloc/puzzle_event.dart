@@ -25,6 +25,8 @@ class PlayerRemoved extends PuzzleEvent {
 
 class GameStarted extends PuzzleEvent {}
 
+class CountdownTicked extends PuzzleEvent {}
+
 class GamepadInputRegistered extends PuzzleEvent {
   final String playerId;
   final int input;

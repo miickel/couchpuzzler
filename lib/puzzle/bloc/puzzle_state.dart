@@ -3,18 +3,23 @@ part of 'puzzle_bloc.dart';
 enum Status { lobby, playing }
 
 class PuzzleState extends Equatable {
-  const PuzzleState(
-      {this.status = Status.lobby,
-      this.players = const [],
-      this.puzzles = const {},
-      this.playersReady = const {},
-      required this.playerThemes});
+  const PuzzleState({
+    this.status = Status.lobby,
+    this.players = const [],
+    this.puzzles = const {},
+    this.playersReady = const {},
+    required this.playerThemes,
+    required this.secondsToBegin,
+    this.isCountdownRunning = false,
+  });
 
   final Status status;
   final List<Player> players;
   final Map<String, Puzzle> puzzles;
   final Map<String, bool> playersReady;
   final List<PlayerTheme> playerThemes;
+  final int secondsToBegin;
+  final bool isCountdownRunning;
 
   int get numberOfPlayers => players.length;
 
@@ -27,6 +32,8 @@ class PuzzleState extends Equatable {
     Map<String, Puzzle>? puzzles,
     Map<String, bool>? playersReady,
     List<PlayerTheme>? playerThemes,
+    int? secondsToBegin,
+    bool? isCountdownRunning,
   }) {
     return PuzzleState(
       status: status ?? this.status,
@@ -34,9 +41,18 @@ class PuzzleState extends Equatable {
       puzzles: puzzles ?? this.puzzles,
       playersReady: playersReady ?? this.playersReady,
       playerThemes: playerThemes ?? this.playerThemes,
+      secondsToBegin: secondsToBegin ?? this.secondsToBegin,
+      isCountdownRunning: isCountdownRunning ?? this.isCountdownRunning,
     );
   }
 
   @override
-  List<Object> get props => [status, players, puzzles, playersReady];
+  List<Object> get props => [
+        status,
+        players,
+        puzzles,
+        playersReady,
+        isCountdownRunning,
+        secondsToBegin,
+      ];
 }

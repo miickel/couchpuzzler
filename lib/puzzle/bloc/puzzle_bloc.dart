@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -8,17 +10,27 @@ part 'puzzle_event.dart';
 part 'puzzle_state.dart';
 
 const _size = 3;
+const _countDown = 5;
 
 class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
-  PuzzleBloc({required this.playerThemes})
-      : super(PuzzleState(playerThemes: playerThemes)) {
+  PuzzleBloc({
+    required this.playerThemes,
+    required Ticker ticker,
+  })  : _ticker = ticker,
+        super(PuzzleState(
+          playerThemes: playerThemes,
+          secondsToBegin: _countDown,
+        )) {
     on<PlayerAdded>(_onPlayerAdded);
     on<PlayerRemoved>(_onPlayerRemoved);
     on<GameStarted>(_onGameStarted);
+    on<CountdownTicked>(_onCountdownTicked);
     on<GamepadInputRegistered>(_onGamepadInputRegistered);
   }
 
   final List<PlayerTheme> playerThemes;
+  final Ticker _ticker;
+  StreamSubscription<int>? _tickerSubscription;
 
   _onPlayerAdded(PlayerAdded event, Emitter<PuzzleState> emit) {
     if (!state.players.any((e) => e.id == event.player.id)) {
@@ -37,14 +49,35 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
   }
 
   _onGameStarted(GameStarted event, Emitter<PuzzleState> emit) {
-    final puzzle = _generatePuzzle(_size, shuffle: true);
-    var puzzles = {for (var p in state.players) p.id: puzzle};
     Interop.setGameState("playing");
-    emit(state.copyWith(status: Status.playing, puzzles: puzzles));
+    _startTicker();
+    emit(state.copyWith(
+      status: Status.playing,
+      puzzles: _shufflePuzzles(false),
+      isCountdownRunning: true,
+      secondsToBegin: _countDown,
+    ));
+  }
+
+  _onCountdownTicked(CountdownTicked event, Emitter<PuzzleState> emit) {
+    if (state.secondsToBegin == 0) {
+      _tickerSubscription?.pause();
+      emit(state.copyWith(isCountdownRunning: false));
+    } else {
+      emit(state.copyWith(
+        secondsToBegin: state.secondsToBegin - 1,
+        puzzles:
+            state.secondsToBegin < 4 ? _shufflePuzzles(true) : state.puzzles,
+      ));
+    }
   }
 
   _onGamepadInputRegistered(
       GamepadInputRegistered event, Emitter<PuzzleState> emit) {
+    if (state.isCountdownRunning) {
+      return false;
+    }
+
     var player = state.players.firstWhere((p) => p.id == event.playerId);
     var playerIndex = state.players.indexOf(player);
     var input = GamepadInput.values[event.input];
@@ -95,6 +128,16 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
 
         break;
     }
+  }
+
+  Map<String, Puzzle> _shufflePuzzles(bool shuffle) {
+    final puzzle = _generatePuzzle(_size, shuffle: shuffle);
+    return {for (var p in state.players) p.id: puzzle};
+  }
+
+  _startTicker() {
+    _tickerSubscription?.cancel();
+    _tickerSubscription = _ticker.tick().listen((_) => add(CountdownTicked()));
   }
 
   Player _changePlayerTheme(Player player, int step) {
@@ -183,5 +226,11 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
             currentPosition: currentPositions[i - 1],
           )
     ];
+  }
+
+  @override
+  Future<void> close() {
+    _tickerSubscription?.cancel();
+    return super.close();
   }
 }

@@ -5,3 +5,4 @@ export 'player_theme.dart';
 export 'position.dart';
 export 'tile.dart';
 export 'puzzle.dart';
+export 'ticker.dart';
