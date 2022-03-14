@@ -160,9 +160,9 @@ class _JoinInstructions extends StatelessWidget {
     var children = state.players.map(
       (e) {
         var theme = state.themeForPlayer(state.players.indexOf(e));
-        var ready = state.playersReady[e.id] == true;
+        var ready = state.playersReady[e.id] != true;
         return SizedBox.square(
-          dimension: 24,
+          dimension: 32,
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(1000),
@@ -170,7 +170,7 @@ class _JoinInstructions extends StatelessWidget {
               border: Border.all(color: Colors.black26, width: 2),
               boxShadow: [
                 BoxShadow(
-                  color: theme.primaryColor.withAlpha(120),
+                  color: theme.primaryColor.withAlpha(ready ? 120 : 0),
                   spreadRadius: 3,
                   blurRadius: 8,
                   offset: const Offset(0, 3),
@@ -178,12 +178,21 @@ class _JoinInstructions extends StatelessWidget {
               ],
             ),
             child: ready
-                ? const Center(
-                    child: Icon(
-                    Icons.check,
-                    size: 14,
-                    color: Colors.black87,
-                  ))
+                ? FractionallySizedBox(
+                    widthFactor: .95,
+                    heightFactor: .95,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(1000)),
+                      ),
+                      child: Icon(
+                        Icons.thumb_up,
+                        size: 14,
+                        color: theme.primaryColor,
+                      ),
+                    ),
+                  )
                 : const SizedBox(),
           ),
         );
